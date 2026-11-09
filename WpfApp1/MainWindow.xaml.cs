@@ -1,24 +1,135 @@
-﻿using System.Text;
+﻿
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace WpfApp1
+namespace KatalogProduktow4K
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        public ObservableCollection<Produkt> produkty { get; set; } = new ObservableCollection<Produkt>();
+
         public MainWindow()
         {
             InitializeComponent();
+
+            KategorieComboBox.ItemsSource = new string[] { "Elektronika", "Odzież", "Książki", "Meble" };
+            KategorieComboBox.SelectedIndex = 0;
+
+            produkty.Add(new Produkt { Nazwa = "Laptop", Cena = 3500, Ilosc = 5, Kategoria = "Elektronika" });
+            produkty.Add(new Produkt { Nazwa = "Koszula", Cena = 120, Ilosc = 10, Kategoria = "Odzież" });
+
+            DataContext = this;
+        }
+
+        private void Oblicz(object sender, RoutedEventArgs e)
+        {
+            if (!double.TryParse(CenaTextBox.Text, out double cena) || cena < 0)
+            {
+                WynikTextBlock.Content = "Niepoprawna cena";
+                return;
+            }
+
+            if (!int.TryParse(IloscTextBox.Text, out int ilosc) || ilosc < 0)
+            {
+                WynikTextBlock.Content = "Niepoprawna ilość";
+                return;
+            }
+
+            string kategoria = KategorieComboBox.SelectedItem as string ?? "Brak";
+
+            double wartosc = cena * ilosc;
+
+            if (PromocjaCheckBox.IsChecked == true)
+            {
+                wartosc *= 0.9;
+            }
+
+            WynikTextBlock.Content = $"{NazwaTextBox.Text} ({kategoria}): {wartosc:F2} zł";
+        }
+
+        private void DodajProdukt(object sender, RoutedEventArgs e)
+        {
+            if (!double.TryParse(CenaTextBox.Text, out double cena) || cena < 0)
+            {
+                MessageBox.Show("Niepoprawna cena");
+                return;
+            }
+
+            if (!int.TryParse(IloscTextBox.Text, out int ilosc) || ilosc < 0)
+            {
+                MessageBox.Show("Niepoprawna ilość");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(NazwaTextBox.Text))
+            {
+                MessageBox.Show("Podaj nazwę produktu");
+                return;
+            }
+
+            string kategoria = KategorieComboBox.SelectedItem as string ?? "Brak";
+
+            produkty.Add(new Produkt
+            {
+                Nazwa = NazwaTextBox.Text,
+                Cena = cena,
+                Ilosc = ilosc,
+                Kategoria = kategoria
+            });
+        }
+
+        private void UsunProdukt(object sender, RoutedEventArgs e)
+        {
+            if (ListaProduktow.SelectedItem is Produkt wybranyProdukt)
+            {
+                MessageBoxResult wynik = 
+                    MessageBox.Show($"Czy na pewno chcesz usunąć produkt: {wybranyProdukt.Nazwa}?", "Potwierdzenie", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if(wynik == MessageBoxResult.Yes)
+                {
+                    produkty.Remove(wybranyProdukt);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Nie wybrano produktu do usunięcia.");
+            }
+        }
+
+        private void ListaProduktow_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ListaProduktow.SelectedItem is Produkt produkt)
+            {
+                InformacjeProduktow.ItemsSource = new[]
+                {
+            new { Pole = "Nazwa", Wartosc = produkt.Nazwa },
+            new { Pole = "Cena", Wartosc = produkt.Cena + " zł" },
+            new { Pole = "Ilość", Wartosc = produkt.Ilosc.ToString() },
+            new { Pole = "Kategoria", Wartosc = produkt.Kategoria },
+            new { Pole = "Wartość", Wartosc = (produkt.Cena * produkt.Ilosc).ToString("F2") + " zł" }
+        };
+            }
+            else
+            {
+                InformacjeProduktow.ItemsSource = null;
+            }
+        }
+
+        private void PokazZaznaczony (object sednder, SelectionChangedEventArgs e)
+        {
+            if(ListaProduktow.SelectedItem is not Produkt p) return;
+
+            NazwaTextBox.Text = p.Nazwa;
+            CenaTextBox.Text = p.Cena.ToString();
+            IloscTextBox.Text = p.Ilosc.ToString();
+        }
+
+        private void Zapisz(object sender, RoutedEventArgs e)
+        {
+            if(ListaProduktow.SelectedItem is not Produkt p) return;
+            if (!double.TryParse(CenaTextBox.Text, out double cena) || cena < 0) ;
+            if (!int.TryParse(IloscTextBox.Text, out int ilosc) || ilosc < 0) ;
+            string nazwa = NazwaTextBox.Text;
         }
     }
 }
