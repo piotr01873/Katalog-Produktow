@@ -1,25 +1,37 @@
-﻿using System.ComponentModel;
+﻿
+using System.ComponentModel;
 
 namespace KatalogProduktow4K
 {
     public class Produkt : INotifyPropertyChanged
     {
-        public string Nazwa { get; set; } = "";
+        private string nazwa = "";
+        public string Nazwa
+        {
+            get { return nazwa; }
+            set { nazwa = value; Zmiana(nameof(Nazwa)); }
+        }
 
         private double cena;
-
         public double Cena
         {
             get { return cena; }
-            set { cena = value < 0 ? 0 : value; }
+            set { cena = value < 0 ? 0 : value; Zmiana(nameof(Cena)); }
         }
-        private int ilosc;
 
-        public int Ilosc { 
+        private int ilosc;
+        
+        public int Ilosc {
             get { return ilosc; }
             set { ilosc = value < 0 ? 0 : value; Zmiana(nameof(Ilosc)); }
         }
-        public string Kategoria { get; set; } = "";
+
+        private string kategoria = "";
+        public string Kategoria
+        {
+            get { return kategoria; }
+            set { kategoria = value; Zmiana(nameof(Kategoria)); }
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

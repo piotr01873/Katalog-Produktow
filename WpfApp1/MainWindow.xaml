@@ -40,6 +40,8 @@
             <Button Content="Oblicz wartość" Click="Oblicz" Padding="10,5" Margin="0,0,10,0"/>
             <Button Content="Dodaj produkt" Click="DodajProdukt" Padding="10,5" Margin="0,0,10,0"/>
             <Button Content="Usuń produkt" Click="UsunProdukt" Padding="10,5"/>
+            <Button Content="Zapisz zmiany" Click="EdytujProdukt" Padding="10,5" Margin="10,0,0,0"/>
+
         </StackPanel>
 
         <Label x:Name="WynikTextBlock" Grid.Row="6" Grid.ColumnSpan="2"
@@ -60,7 +62,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-
+        
         <!-- Informacje po prawej -->
         <StackPanel Grid.Column="2" Grid.RowSpan="8" Margin="10,0,0,0">
             <Label Content="Informacje o produkcie" FontSize="18" FontWeight="Bold"/>
@@ -73,6 +75,8 @@
                     </GridView>
                 </ListView.View>
             </ListView>
+            <TextBlock x:Name="WartoscMagazynuText" FontSize="16" FontWeight="Bold" Margin="0,15,0,0" Text="Wartość magazynu: 0 zł"/>
+
         </StackPanel>
 
     </Grid>

@@ -77,6 +77,7 @@ namespace KatalogProduktow4K
                 Ilosc = ilosc,
                 Kategoria = kategoria
             });
+            WartoscMagazynu();
         }
 
         private void UsunProdukt(object sender, RoutedEventArgs e)
@@ -94,6 +95,7 @@ namespace KatalogProduktow4K
             {
                 MessageBox.Show("Nie wybrano produktu do usunięcia.");
             }
+            WartoscMagazynu();
         }
 
         private void ListaProduktow_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -117,11 +119,16 @@ namespace KatalogProduktow4K
 
         private void PokazZaznaczony (object sednder, SelectionChangedEventArgs e)
         {
-            if(ListaProduktow.SelectedItem is not Produkt p) return;
+            InformacjeProduktow.Items.Clear();
 
-            NazwaTextBox.Text = p.Nazwa;
-            CenaTextBox.Text = p.Cena.ToString();
-            IloscTextBox.Text = p.Ilosc.ToString();
+            if (ListaProduktow.SelectedItem is Produkt produkt)
+            {
+                InformacjeProduktow.Items.Add(new { Pole = "Nazwa", Wartosc = produkt.Nazwa });
+                InformacjeProduktow.Items.Add(new { Pole = "Cena", Wartosc = produkt.Cena.ToString() });
+                InformacjeProduktow.Items.Add(new { Pole = "Ilość", Wartosc = produkt.Ilosc.ToString() });
+                InformacjeProduktow.Items.Add(new { Pole = "Kategoria", Wartosc = produkt.Kategoria });
+            }
+            WartoscMagazynu();
         }
 
         private void Zapisz(object sender, RoutedEventArgs e)
@@ -130,6 +137,47 @@ namespace KatalogProduktow4K
             if (!double.TryParse(CenaTextBox.Text, out double cena) || cena < 0) ;
             if (!int.TryParse(IloscTextBox.Text, out int ilosc) || ilosc < 0) ;
             string nazwa = NazwaTextBox.Text;
+            WartoscMagazynu();
         }
+
+
+        private void EdytujProdukt(object sender, RoutedEventArgs e)
+        {
+            if (ListaProduktow.SelectedItem is Produkt produkt)
+            {
+                if (double.TryParse(CenaTextBox.Text, out double cena) &&
+                    int.TryParse(IloscTextBox.Text, out int ilosc))
+                {
+                    produkt.Nazwa = NazwaTextBox.Text;
+                    produkt.Cena = cena;
+                    produkt.Ilosc = ilosc;
+                    produkt.Kategoria = KategorieComboBox.Text;
+
+                    WynikTextBlock.Content = "Produkt zaktualizowany";
+                }
+                else
+                {
+                    MessageBox.Show("Podaj poprawną cenę i ilość");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Wybierz produkt z listy");
+            }
+            WartoscMagazynu();
+        }
+
+        private void WartoscMagazynu()
+        {
+            double suma = 0;
+
+            foreach (Produkt produkt in produkty)
+            {
+                suma += produkt.Cena * produkt.Ilosc;
+            }
+
+            WartoscMagazynuText.Text = "Wartość magazynu: " + suma + " zł";
+        }
+
     }
 }
